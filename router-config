@@ -1,0 +1,48 @@
+enable
+conf t
+host /* HOSTNAME */
+
+banner motd # ** No unauthorized access! ** #
+enable secret /* PASSWORD */
+service password-encryption
+username /* USERNAME */ secret /* PASWORD */
+
+ip domain-name /* DOMAIN */
+crypto key generate rsa
+1024
+
+line con 0
+  password /* PASSWORD */
+  login
+line vty 0 15
+  password /* PASSWORD */
+  login
+  login local
+  transport input ssh
+  exit
+
+login block-for 60 attempts 5 within 30
+
+
+int s0/0/0
+  ip add /* IP-ADDRESS */ /* SUBNETMASK */
+  no shut
+  description /* DESCRIPTION */
+
+  ip nat /* inside|outside */
+
+int g0/0.10
+  encapsulation dot1Q 10
+  ip add /* IP-ADDRESS */ /* SUBNETMASK */
+  description /* DESCRIPTION */
+
+int g0/0.98
+  encapsulation dot1Q 98 native
+  description Native
+
+int g0/0
+  no shut
+
+end
+write
+exit

@@ -1,0 +1,57 @@
+enable
+conf t
+host /* HOSTNAME */
+
+banner motd # ** No unauthorized access! ** #
+enable secret /* PASSWORD */
+service password-encryption
+username /* USERNAME */ secret /* PASWORD */
+
+ip domain-name /* DOMAIN */
+crypto key generate rsa
+1024
+
+line con 0
+  password /* PASSWORD */
+  login
+line vty 0 15
+  password /* PASSWORD */
+  login
+  login local
+  transport input ssh
+  exit
+
+login block-for 60 attempts 5 within 30
+
+vtp version 2
+vtp mode /* server|client */
+vtp domain /* VTP-DOMAIN */
+vtp password /* VTP-PASSWORD */
+
+vlan 10
+  name /* VLAN-NAME */
+interface range fa0/1-20
+  switchport mode access
+  switchport access vlan 10
+  switchport port-security
+
+interface range fa0/21-22
+  shutdown
+
+vlan 98
+  name Native
+interface range fa0/23-24, g0/1-2
+  switchport mode trunk
+  switchport trunk native vlan 98
+
+vlan 99
+  name /* VLAN-NAME */
+interface vlan 99
+  ip add /* IP-ADDRESS */ /* SUBNETMASK */
+  no shut
+  description /* DESCRIPTION */
+  exit
+
+ip default-gateway /* GATEWAY-IP */
+
+do wr
