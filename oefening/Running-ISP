@@ -1,0 +1,155 @@
+ISP#sho run
+Building configuration...
+
+Current configuration : 2714 bytes
+!
+! Last configuration change at 10:43:12 UTC Wed May 9 2018
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname ISP
+!
+boot-start-marker
+boot-end-marker
+!
+!
+security passwords min-length 8
+enable secret 5 $1$FbNu$nOBaChjSQBMCqup04dQZP.
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name ShellCorp.com
+ip cef
+login block-for 60 attempts 5 within 30
+no ipv6 cef
+multilink bundle-name authenticated
+!
+cts logging verbose
+!
+!
+license udi pid CISCO1941/K9 sn FCZ195091K9
+!
+!
+username Ghost secret 5 $1$U6xz$/P.3TKUHSlqWdxCCjQeQC1
+!
+redundancy
+!
+!
+!
+!
+!
+!
+interface Embedded-Service-Engine0/0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/0
+ description To-Internet
+ ip address dhcp
+ ip nat outside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ description To-Aalst-R1
+ bandwidth 2000
+ ip address 10.10.10.1 255.255.255.240
+ ip nat inside
+ ip virtual-reassembly in
+ ip ospf message-digest-key 1 md5 7 08034D432B1808
+ ip ospf dead-interval 4
+ ip ospf hello-interval 2
+ clock rate 2000000
+!
+interface Serial0/0/1
+ description To-Adam-R1
+ bandwidth 2000
+ ip address 10.10.10.17 255.255.255.240
+ ip nat inside
+ ip virtual-reassembly in
+ ip ospf message-digest-key 1 md5 7 143513062E0527
+ ip ospf dead-interval 4
+ ip ospf hello-interval 2
+!
+router ospf 1
+ router-id 1.0.0.1
+ area 0 authentication message-digest
+ passive-interface default
+ no passive-interface Serial0/0/0
+ no passive-interface Serial0/0/1
+ network 10.10.10.1 0.0.0.0 area 0
+ network 10.10.10.17 0.0.0.0 area 0
+ default-information originate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip nat inside source list 1 interface GigabitEthernet0/0 overload
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/0 10.22.1.254
+!
+!
+!
+!
+access-list 1 permit 10.10.10.0 0.0.0.15
+access-list 1 permit 10.10.10.16 0.0.0.15
+access-list 1 deny   10.0.0.0 0.255.255.255
+access-list 1 deny   172.16.0.0 0.15.255.255
+access-list 1 deny   192.168.0.0 0.0.255.255
+access-list 1 permit any
+!
+control-plane
+!
+!
+banner motd ^C Restricted Area! Ghost in the Shell personel only! ^C
+!
+line con 0
+ exec-timeout 15 0
+ password 7 002743150752285621
+ login
+line aux 0
+line 2
+ no activation-character
+ no exec
+ transport preferred none
+ transport output pad telnet rlogin lapb-ta mop udptn v120 ssh
+ stopbits 1
+line vty 0 4
+ exec-timeout 15 0
+ password 7 06255F324F473F2D3C
+ login local
+ transport input ssh
+line vty 5 15
+ exec-timeout 15 0
+ password 7 06255F324F473F2D3C
+ login local
+ transport input ssh
+!
+scheduler allocate 20000 1000
+!
+end
