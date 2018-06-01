@@ -82,16 +82,13 @@ ip nat inside source list 1 interface s0/0/0 overload
 
 router bgp 64003
   neighbor 98.96.94.65 remote-as 64002
-  network 172.16.51.216 mask 0.0.0.3
-  network 172.16.51.64 mask 0.0.0.64
-  network 98.96.94.64 mask 0.0.0.16
+  network 172.16.51.216 mask 255.255.255.252
+  network 172.16.51.64 mask 255.255.255.192
+  network 98.96.94.64 mask 255.255.255.240
 
 router ospf 1
   passive-interface default
   no passive-interface tunnel0
-  network 172.16.51.216 255.255.255.252 area 20
-  network 172.16.51.64 255.255.255.192 area 20
-  network 192.168.10.0 255.255.255.252 area 0
   network 172.16.51.216 255.255.255.252 area 20
   network 172.16.51.64 255.255.255.192 area 20
   network 192.168.10.0 255.255.255.252 area 0

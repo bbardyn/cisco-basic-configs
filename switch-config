@@ -66,16 +66,10 @@ interface range fa0/4-24
   switchport port-security
   shutdown
 
-vlan 98
-  name Native
-interface range fa0/23-24, g0/1-2
-  switchport mode trunk
-  switchport trunk native vlan 98
-
 interface vlan 99
   ip add 172.16.51.218 255.255.255.252
-  no shut
   description Management
+  no shut
   exit
 
 ip default-gateway 172.16.51.217
