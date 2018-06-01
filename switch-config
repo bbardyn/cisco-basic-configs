@@ -1,41 +1,69 @@
 enable
 conf t
-host /* HOSTNAME */
+host DATA-S1
 
-banner motd # ** No unauthorized access! ** #
-enable secret /* PASSWORD */
+banner motd #Restricted Area! Lords of the ping are looking for you!#
+
+enable secret Summ3rT1me
 service password-encryption
-username /* USERNAME */ secret /* PASWORD */
 
-ip domain-name /* DOMAIN */
+username ben secret J0bHunT
+username robbe secret J0bHunT
+username kirsten secret J0bHunT
+username dries secret J0bHunT
+username dante secret J0bHunT
+username seppe secret J0bHunT
+username pieter secret J0bHunT
+
+ip domain-name walkingdead.com
 crypto key generate rsa
-1024
+2048
 
 line con 0
-  password /* PASSWORD */
+  session-timeout 15
+  password C0sciC0N
   login
 line vty 0 15
-  password /* PASSWORD */
+  logging synchronous
+  session-timeout 15
+  password C0sciVTY
   login
   login local
   transport input ssh
   exit
 
-login block-for 60 attempts 5 within 30
+login block-for 180 attempts 2 within 30
 
-vtp version 2
-vtp mode /* server|client */
-vtp domain /* VTP-DOMAIN */
-vtp password /* VTP-PASSWORD */
-
-vlan 10
-  name /* VLAN-NAME */
-interface range fa0/1-20
+vlan 99
+  name Management
+interface range fa0/1-2
   switchport mode access
-  switchport access vlan 10
+  switchport access vlan 99
   switchport port-security
+  switchport port-security max 5
+  switchport port-security restrict
 
-interface range fa0/21-22
+vlan 100
+  name Servers1
+interface range fa0/3
+  switchport mode access
+  switchport access vlan 100
+  switchport port-security
+  switchport port-security max 5
+  switchport port-security restrict
+
+vlan 98
+  name Native
+interface range g0/1
+  switchport mode trunk
+  switchport trunk native vlan 98
+
+vlan 200
+  name parking
+interface range fa0/4-24
+  switchport mode access
+  switchport access vlan 200
+  switchport port-security
   shutdown
 
 vlan 98
@@ -44,14 +72,12 @@ interface range fa0/23-24, g0/1-2
   switchport mode trunk
   switchport trunk native vlan 98
 
-vlan 99
-  name /* VLAN-NAME */
 interface vlan 99
-  ip add /* IP-ADDRESS */ /* SUBNETMASK */
+  ip add 172.16.51.218 255.255.255.252
   no shut
-  description /* DESCRIPTION */
+  description Management
   exit
 
-ip default-gateway /* GATEWAY-IP */
+ip default-gateway 172.16.51.217
 
-do wr
+//do wr
