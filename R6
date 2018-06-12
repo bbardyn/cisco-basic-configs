@@ -1,0 +1,44 @@
+configure terminal
+
+banner motd #Restricted Area! Lords of the ping are looking for you!#
+
+no ip domain-lookup
+
+interface fa1/0
+  ip address 192.168.100.2 255.255.255.248
+  no shutdown
+  description To-ESW1
+  exit
+
+interface loopback 0
+  ip address 10.2.1.1 255.255.255.255
+  no shutdown
+  description Lo0
+  exit
+
+interface loopback 1
+  ip address 10.2.2.1 255.255.255.255
+  no shutdown
+  description Lo1
+  exit
+
+interface loopback 2
+  ip address 10.2.3.1 255.255.255.255
+  no shutdown
+  description Lo2
+  exit
+
+router ospf 1
+  router-id 6.6.6.6
+  interface fa1/0
+  ip ospf 1 area 0
+  ip ospf priority 200
+  interface loopback 0
+  ip ospf 1 area 0
+  interface loopback 1
+  ip ospf 1 area 0
+  interface loopback 2
+  ip ospf 1 area 0
+
+end
+wr
