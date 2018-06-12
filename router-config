@@ -1,97 +1,37 @@
-enable
 conf t
-host DATA
 
 banner motd #Restricted Area! Lords of the ping are looking for you!#
 
 no ip domain-lookup
 
-enable secret Summ3rT1me
-service password-encryption
-
-username ben secret J0bHunT
-username robbe secret J0bHunT
-username kirsten secret J0bHunT
-username dries secret J0bHunT
-username dante secret J0bHunT
-username seppe secret J0bHunT
-username pieter secret J0bHunT
-
-ip domain-name walkingdead.com
-crypto key generate rsa
-2048
-
-line con 0
-  session-timeout 15
-  password C0sciC0N
-  login
-line vty 0 15
-  logging synchronous
-  session-timeout 15
-  password C0sciVTY
-  login
-  login local
-  transport input ssh
-  exit
-
-login block-for 180 attempts 2 within 30
-
-interface g0/0.99
-  encapsulation dot1Q 99
-  ip add 172.16.51.217 255.255.255.252
-  ip nat inside
-  description VLAN 99 - Management
-
-interface g0/0.100
-  encapsulation dot1Q 100
-  ip add 172.16.51.65 255.255.255.192
-  ip nat inside
-  description VLAN 100 - Servers1
-
-interface g0/0.98
-  encapsulation dot1Q 98 native
-  description VLAN 98 - Native
-
-interface g0/0
-  no shut
-  exit
-
-username TELENET password walkers
-interface s0/0/0
-  encapsulation ppp
-  ppp authentication pap
-  ppp pap sent-username DATA password walkers
-  ip address 98.96.94.66 255.255.255.240
-  description To Telenet
-  ip nat outside
-  no shut
-
-interface tunnel0
-  tunnel mode gre ip
-  ip address 192.168.10.2 255.255.255.252
-  tunnel source 98.96.94.66
-  tunnel destination 200.100.50.2
-  ip ospf hello-interval 2
-  ip ospf dead-interval 4
+interface fa0/1
+  ip address 10.44.0.1 255.255.255.0
   no shutdown
+  description To-SW2
+  exit
 
-access-list 1 permit any
-ip nat inside source list 1 interface s0/0/0 overload
+interface fa0/0
+  ip address 10.34.0.2 255.255.255.0
+//  no shutdown
+  description To-R3
+  exit
 
-// ip route 0.0.0.0 0.0.0.0 s0/0/0 98.96.94.65
-
-router bgp 64003
-  neighbor 98.96.94.65 remote-as 64002
-  network 172.16.51.216 mask 255.255.255.252
-  network 172.16.51.64 mask 255.255.255.192
-  network 98.96.94.64 mask 255.255.255.240
-
-router ospf 1
+router eigrp 666
   passive-interface default
-  no passive-interface tunnel0
-  network 172.16.51.216 255.255.255.252 area 20
-  network 172.16.51.64 255.255.255.192 area 20
-  network 192.168.10.0 255.255.255.252 area 0
+  no passive-interface fa0/0
+  no passive-interface fa0/1
+  network 10.44.0.0 0.0.0.255
+  network 10.34.0.0 0.0.0.255
 
-exit
-security passwords min-length 8
+end
+wr
+
+
+configure terminal
+no router eigrp 666
+router ospf 666
+passive-interface default
+no passive-interface fa0/0
+no passive-interface fa0/1
+network 10.34.0.0 0.0.0.255 area 0
+network 10.44.0.0 0.0.0.255 area 0
